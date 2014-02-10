@@ -177,6 +177,8 @@ class User_model extends CI_Model{
 		Return Value: None
 	*/
 	public function insert_account($table_name, $data){
+
+		/*gets the date from $_POST*/
 		$snum = $this->input->post('student_number');
 		$enum = $this->input->post('employee_number');
 		$lname = $this->input->post('last_name');
@@ -191,6 +193,7 @@ class User_model extends CI_Model{
 		$college = $this->input->post('college');
 		$degree = $this->input->post('degree');
 
+		/*put into array, then insert it into the database*/
 		$data = array('employee_number' => $enum, 'student_number' => $snum, 'last_name' => $lname, 'first_name' => $fname, 'middle_name' => $mname, 'user_type' => $usertype, 'username' => $username, 'password' => $password, 'college_address' => $collegeAdd, 'email_address' => $email, 'contact_number' => $contactNum, 'borrow_limit' => 3, 'waitlist_limit' => 5, 'college' => $college, 'degree' => $degree);
 		$this->db->insert($table_name, $data);
 	}
