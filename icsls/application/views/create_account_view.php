@@ -62,7 +62,7 @@
 
 			First Name: <input type="text" id="first_name" name = "first_name" pattern = "([A-Za-z]{2,32}\s*)+" required/><br/><br/>
 			
-			Middle Name: <input type="text" id="middle_name" name = "middle_name" pattern = "[A-Za-z]{1,2}"required/><br/><br/>
+			Middle Name: <input type="text" id="middle_name" name = "middle_name" pattern = "[A-Za-z]{1,32}"required/><br/><br/>
 			
 			Last Name: <input type="text" id="last_name" name = "last_name" pattern = "[A-Za-z]+" required/><br/><br/>
 			
@@ -72,7 +72,7 @@
 			
 			Contact Number: <input type="text" id="contact_number" name = "contact_number" pattern = "[0-9]{11}" required/><br/><br/>
 			
-			Username: <input type="text" id="username" name = "username"pattern = "[A-Za-z_.0-9]+" required/><br/><br/>
+			Username: <input type="text" id="username" name = "username" pattern = "[A-Za-z_.0-9]+" required/><br/><br/>
 			
 			Password: <input type="password" id="password" name = "password" required/>
 				<span name="helppass"></span><br/><br/>

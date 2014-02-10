@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * User_model
+ *
+ * @package	icsls
+ * @category	Model
+ * @author	CMSC128 - AB-5L Team 4
+ */
 class User_model extends CI_Model{
 	/* Parameters:
 		a. $input - input of the user in the search bar
@@ -272,6 +278,42 @@ class User_model extends CI_Model{
 		$this->db->query("UPDATE transactions SET waitlist_rank = $userWaitlistRank + (SELECT @rank := @rank + 1) WHERE waitlist_rank > '$userWaitlistRank' AND reference_material_id='$referenceId'");			
 		$this->db->query("DELETE FROM transactions WHERE borrower_id ='$userId' AND reference_material_id ='$referenceId'");
 		return true;
+	}
+
+	function upload_picture($username){
+		//Constants
+
+		$userImageDirectory = 'img/user_images/';
+		$defaultImage = '0.jpg';
+
+		$config['upload_path'] = $userImageDirectory;
+		$config['allowed_types'] = 'jpg|png';
+		$config['max_size']	= '2048 KB';
+		$config['max_width'] = '1024';
+		$config['max_height'] = '1024';
+		$this->upload->initialize($config);
+
+		if($this->session->userdata('username') == $username){
+			$this->db->select('profile_picture')
+			->from('users')
+			->where('username',$username);
+			$currentImage = $this->db->get()->result()[0]->profile_picture;
+
+			if($currentImage != $defaultImage){
+				unlink($currentImage);
+			}
+		}
+
+		if($this->upload->do_upload('profile_picture')){
+			$uploadData = $this->upload->data('profile_picture');
+			$fullPath = $userImageDirectory . $uploadData['orig_name'];
+			$newPicture = $this->session->userdata('id') . $uploadData['file_ext'];
+			rename($fullPath, $userImageDirectory . $newPicture);
+			$this->db->where('username', $username);
+			$this->db->update('users',array('profile_picture' => $newPicture));
+
+		}
+
 	}
 }
 

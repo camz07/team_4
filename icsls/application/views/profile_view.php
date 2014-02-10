@@ -1,10 +1,54 @@
 <html>
-<head></head>
+<head>
+	<script src=<?php echo base_url("themes/jquery-2.0.3.min.js"); ?>></script>
+		<script type="text/javascript">	
+			window.onload = function(){
+					createForm.password.onblur = validatePassword;
+					createForm.repass.onblur = validateRePass;
+			}
+			
+			function validatePassword(){
+				msg = "Invalid input!  ";
+				str = createForm.password.value;
+				
+				if(str == "") msg+="Password is required. ";
+				if(str.match(/^[a-z]$/)) msg="Strength: Weak";
+				else if(str.match(/^[0-9]+$/)) msg="Strength: Weak";
+				else if(str.match(/^[a-z0-9]+$/)) msg="Strength: Medium";
+				else if(str.match(/^[a-zA-Z0-9]+$/)) msg="Strength: Strong";
+				
+				if(msg == "Invalid input!  ") msg="";
+				document.getElementsByName("helppass")[0].innerHTML=msg;
+				
+			}
+				
+			function validateRePass(){
+				msg = "Invalid input!  ";
+				str = createForm.repass.value;
+				
+				if(str != createForm.password.value) msg+="Password does not match. ";
+				else msg="Passwords match.";
+				
+				if(msg == "Invalid input!  ") msg="";
+				document.getElementsByName("helprepass")[0].innerHTML=msg;
+				if(msg == "") return true;
+				
+			}	
+		</script>
+</head>
 <?=$this->load->view("includes/header")?>
 <body>
-	
 	<div>
-		<form action="<?=base_url()."index.php/profile/save"?>" method="post"><!--Profile Form-->
+		<img height='200' width='200' src='<?=base_url('img/user_images/'.  $query_user->profile_picture)?>'/>
+		<?=$query_user->profile_picture?>
+
+		<form action="<?=base_url()."index.php/profile/change_profile_picture"?>" method="post" accept-charset="utf-8" enctype="multipart/form-data"><!--Profile Form-->
+			Profile picture: <input type='file' id='profile_picture' name='profile_picture' required/><br/>
+			<?=form_submit('submit','Change Profile Picture')?>
+		</form>
+	
+
+		<form action="<?=base_url()."index.php/profile/save"?>" method="post" name="createForm"><!--Profile Form-->
 		<?=$save_message?> <!--Save Message-->
 		<?=$username_exist?><!--Username Message-->
 		<br/>
@@ -15,11 +59,14 @@
 				echo "Student No.: $query_user->student_number<br/>"; 
 			else	echo "Employee No.: $query_user->employee_number<br/>" ; // if user is employee
 			?>				
-			Username: <input type="text" name="username" value="<?=$query_user->username?>"><br/><!--Username-->
-			Password: <input type="password" name="password" placeholder="password"><br/><!--Enter new password-->
+			Username: <input type="text" name="username" value="<?=$query_user->username?>" pattern = "[A-Za-z_.0-9]+"><br/><!--Username-->
+			Password: <input type="password" id="password" name = "password"/>
+				<span name="helppass"></span><br/>			
+			Re-type Password: <input type="password" id="repass" name = "repass"/>
+				<span name="helprepass"></span><br/>
 			College Address: <input type="text" name="college_address" value="<?=$query_user->college_address?>"><br/><!--College address-->
-			Email Address: <input type="text" name="email_address" value="<?=$query_user->email_address?>"><br/><!--Email Address-->
-			Contact No.: <input type="text" name="contact_number" value="<?=$query_user->contact_number?>"><br/><!--Contact No-->
+			Email Address: <input type="text" name="email_address" value="<?=$query_user->email_address?>" pattern = "^([a-z0-9._]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,})(\.[a-zA-Z])*$"><br/><!--Email Address-->
+			Contact No.: <input type="text" name="contact_number" value="<?=$query_user->contact_number?>" pattern = "[0-9]{11}"><br/><!--Contact No-->
 		<!--?php  break; }//end of foreach?-->
 		
 		<input type='submit' name='submit' value='submit'/>

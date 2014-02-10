@@ -59,7 +59,7 @@
 			$data["title"] = "Profile - ICS Library System";
 			
 			//reset user data on session
-			$sessionData = array('loggedIn' => true, 'id' => $id, 'user_type' => $user_type, 'username' => $username); 
+			$sessionData = array('loggedIn' => TRUE, 'id' => $id, 'user_type' => $user_type, 'username' => $username); 
 			$this->session->set_userdata($sessionData);
 			
 			//user query read from database again
@@ -68,6 +68,14 @@
 			
 			$data['save_message'] = "Update Saved!";//save message
 			$this->load->view("profile_view", $data);
+		}
+
+		public function change_profile_picture(){
+			$this->load->library('upload');
+			$username = $this->session->userdata('username');
+			$this->user_model->upload_picture($username);
+
+			redirect('profile');
 		}
 
 		/* Description: function for cancelling reserved/waitlisted books*/
