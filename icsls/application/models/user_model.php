@@ -7,27 +7,30 @@
  * @author	CMSC128 - AB-5L Team 4
  */
 class User_model extends CI_Model{
-	/* Parameters:
-		a. $input - input of the user in the search bar
-		Description: Checks if the input matches any reference material
-		Return value: Returns the reference material info that match
-	*/
+	/**
+	 * This function gets the reference material info that matched the search input
+	 * @param	search input (string)
+	 * @return	rows from database
+	 */
 	public function search_reference_material($input){
 		$searchQuery = $this->db->query("SELECT * FROM reference_material WHERE title LIKE '%$input%' OR author LIKE '%$input%' OR isbn LIKE '%$input%' OR publisher LIKE '%$input%' OR publication_year LIKE '%$input%' OR course_code LIKE '%$input%'");
 		return $searchQuery->result();
 	}
 
+	/**
+	 * This function returns the query result
+	 * @param	query (string)
+	 * @return	rows from database
+	 */
 	public function advanced_search($query){
 		return $this->db->query($query);
 	}
 
-	/* Parameters:
-		a. $referenceId - reference_id of a reference material in the database
-		b. $userId - user_id of the User in the database
-		c. $userType - type of user (S - student; F - faculty)
-		Description: Checks if the User can reserve, cannot reserve, cannot reserve but can waitlist OR has reserved the reference material already
-		Return value: Returns true if reservation is successful, false if not, 7 if the user can still waitlist
-	*/
+	/**
+	 * This function checks if the User can reserve, cannot reserve, cannot reserve but can waitlist OR has reserved the reference material already
+	 * @param	referenceId (int), userId (int), userType (char)
+	 * @return	true || false || constant number (7)
+	 */
 	public function reserve_reference_material($referenceId, $userId, $userType){
 		date_default_timezone_set("Asia/Manila");	//timezone here in the Philippines
 
@@ -61,13 +64,11 @@ class User_model extends CI_Model{
 		 }
 	}
 
-	/* Parameters:
-		a. $referenceId - reference_id of a reference material in the database
-		b. $userId - user_id of the User in the database
-		c. $userType - type of user (S - student; F - faculty)
-		Description: Checks if the User can waitlist, cannot waitlist, can still reserve OR has waitlisted in the reference material already
-		Return value: Returns true if reservation is successful, false if not, 7 if the user can still waitlist
-	*/
+	/**
+	 * This function checks if the User can waitlist, cannot waitlist, can still reserve OR has waitlisted in the reference material already
+	 * @param	referenceId (int), userId (int), userType (char)
+	 * @return	true || false || constant number (7)
+	 */
 	public function waitlist_reference_material($referenceId, $userId, $userType){
 		date_default_timezone_set("Asia/Manila");	//timezone in the Philippines
 
@@ -110,78 +111,66 @@ class User_model extends CI_Model{
 			}
 	}
 
-	/* Parameters:
-		a. $username - Username of the user
-		b. $password - Password of the user
-		Description: Check if the user is registered
-		Return value: Boolean value true if the user is registered, otherwise, false
-	*/
+	/**
+	 * This function check if the user is registered
+	 * @param	username (string), password (string)
+	 * @return	true || false
+	 */
 	public function user_exists($username, $password){
 		$userCount = $this->db->query("SELECT * FROM users WHERE username='$username' AND password='$password'")->num_rows();
 		return ($userCount == 1 ? true : false);
 	}
 
-	/* Parameters:
-		a. $username - Username of the user
-		b. $password - Password of the user
-		Description: Returns the id, user type and username of the user
-		Return value: Array of information containing the result of the query
-	*/
+	/**
+	 * This function returns the id, user type and username of the user
+	 * @param	username (string), password (string)
+	 * @return	rows from the database
+	 */
 	public function get_user_data($username, $password){
 		return $this->db->query("SELECT id, user_type, username FROM users WHERE username='$username' AND password='$password'")->result();
 	}
 
-	/* Parameters:
-		a. $username - Username of the user
-		b. $id - id of the user
-		Description: Returns the attributes of the user
-		Return value: Array of information containing the result of the query
-	*/
+	/**
+	 * This function returns the attributes of the user
+	 * @param	username (string), id (int)
+	 * @return	rows from the database
+	 */
 	public function user_profile($username, $id){
 		return $this->db->query("SELECT * FROM users WHERE username='$username' AND id='$id'")->row();
 	}
 
-	/* Parameters:
-		a. $id - id of the user
-		b. $last_name - last name of the user
-		c. $first_name - first name of the user
-		d. $middle_name - middle name of the user
-		e. $username - username of the user
-		f. $password - Password of the user
-		g. $college_address - college address of the user
-		h. $email_address - email address of the user
-		i. $contact_number - contact number of the user
-		Description: Updates the user information
-		Return value: none
-	*/
+	/**
+	 * This function updates the user information
+	 * @param	id (int), username (string), password (string), college_address (string), email (string), contact number (int)
+	 * @return	none
+	 */
 	public function user_update_profile($id, $username, $password, $college_address, $email_address, $contact_number){
 		$this->db->query("UPDATE users SET username='$username', password='$password', college_address='$college_address', email_address='$email_address', contact_number='$contact_number' WHERE id='$id'");
 	}
 
-	/* Parameters:
-		a. $id - id of the user
-		Description: Returns the transactions of the user
-		Return value: Array of information containing the result of the query
-	*/
+	/**
+	 * This function returns the transactions of the user
+	 * @param	id (int)
+	 * @return	rows from the database
+	 */
 	public function user_book($id){
 		return $this->db->query("SELECT * FROM transactions WHERE borrower_id='$id'")->result();
 	}
 
-	/* Parameters:
-		a. $reference_material_id - id of book/reference
-		Description: Returns the attributes of the book
-		Return value: Array of information containing the result of the query
-	*/
+	/**
+	 * This function returns the attributes of the book
+	 * @param	reference material id (int)
+	 * @return	rows from the database
+	 */
 	public function user_book_reserve($reference_material_id){
 		return $this->db->query("SELECT * FROM reference_material WHERE id='$reference_material_id'")->result();
 	}
 
-	/* 	Parameters:
-		a. $table_name - name of the table (users)
-		b. $data - data from the form ($_POST)
-		Description: Inserts the account to the database
-		Return Value: None
-	*/
+	/**
+	 * This function inserts the account to the database
+	 * @param	table name (string), data (array)
+	 * @return	none
+	 */
 	public function insert_account($table_name, $data){
 		$snum = $this->input->post('student_number');
 		$enum = $this->input->post('employee_number');
@@ -201,45 +190,44 @@ class User_model extends CI_Model{
 		$this->db->insert($table_name, $data);
 	}
 
-	/*	Parameters:
-		a. $studnum - student number from the user
-		Description: Checks if the student number already exists
-		Return Value: Number of rows from the query
-	*/
+	/**
+	 * This function checks if the student number already exists
+	 * @param	student number(varchar)
+	 * @return	true || false
+	 */
 	public function student_exists($studnum){
 		$studentQuery = $this->db->query("SELECT student_number FROM users WHERE student_number = '$studnum'");
 		if($studentQuery->num_rows() > 0) return true;
 		else return false;
 	}
 	
-	/*	Parameters:
-		a. $enum - employee number from the user
-		Description: Checks if the employee number already exists
-		Return Value: Number of rows from the query
-	*/
+	/**
+	 * This function checks if the employee number already exists
+	 * @param	employee number(varchar)
+	 * @return	true || false
+	 */
 	public function faculty_exists($enum){
 		$facultyQuery = $this->db->query("SELECT employee_number FROM users WHERE employee_number = '$enum'");
 		if($facultyQuery->num_rows() > 0) return true;
 		else return false;
 	}
 
-	/*	Parameters:
-		a. $uname - username from the user
-		Description: Checks if the username already exists
-		Return Value: Number of rows from the query
-	*/
+	/**
+	 * This function checks if the username already exists
+	 * @param	username (varchar)
+	 * @return	true || false
+	 */
 	public function username_exists($uname){
 		$usernameQuery = $this->db->query("SELECT username FROM users WHERE username = '$uname'");
 		if($usernameQuery->num_rows() > 0) return true;
 		else return false;
 	}
 
-	/* Parameters:
-		a. $referenceId - reference_id of a reference material in the database
-		b. $userId - user_id of the User in the database
-		Description: Cancels a reservation and updates the borrow_limit of the user, total_available and times_borrowed of the reference material
-		Return value: Returns true if cancellation of reservation is successful
-	*/
+	/**
+	 * This function cancels a reservation and updates the borrow_limit of the user, total_available and times_borrowed of the reference material
+	 * @param	reference id (int), user id (int)
+	 * @return	true
+	 */
 	public function cancel_reserve_reference_material($referenceId, $userId){
 		$userQuery = $this->db->query("SELECT borrow_limit FROM users WHERE id = '$userId'");
 		foreach ($userQuery->result() as $row) { $userBorrowLimit = $row->borrow_limit; }
@@ -260,12 +248,11 @@ class User_model extends CI_Model{
 		return true;
 	}
 
-	/* Parameters:
-		a. $referenceId - reference_id of a reference material in the database
-		b. $userId - user_id of the User in the database
-		Description: Cancels a waitlist and updates the waitlist_limit of the user and the waitlist_rank of the other users in the transactions table
-		Return value: Returns true if cancellation of waitlist is successful
-	*/
+	/**
+	 * This function cancels a waitlist and updates the waitlist_limit of the user and the waitlist_rank of the other users in the transactions table
+	 * @param	reference id (int), user id (int)
+	 * @return	true
+	 */
 	public function cancel_waitlist_reference_material($referenceId, $userId){
 		$userQuery = $this->db->query("SELECT waitlist_limit FROM users WHERE id = '$userId'");
 		foreach ($userQuery->result() as $row) { $userWaitlistLimit = $row->waitlist_limit; }
@@ -280,9 +267,12 @@ class User_model extends CI_Model{
 		return true;
 	}
 
+	/**
+	 * This function changes the user's profile picture
+	 * @param	username (varchar)
+	 * @return	none
+	 */
 	function upload_picture($username){
-		//Constants
-
 		$userImageDirectory = 'img/user_images/';
 		$defaultImage = '0.jpg';
 
