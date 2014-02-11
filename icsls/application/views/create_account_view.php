@@ -11,21 +11,25 @@
 		<title>Register</title>
 		<script src=<?php echo base_url("themes/jquery-2.0.3.min.js"); ?>></script>
 		<script type="text/javascript">	
+
+			/* When this page is loaded, these are the functions*/
 			window.onload = function(){
 					createForm.password.onblur = validatePassword;
 					createForm.repass.onblur = validateRePass;
-					
 					$("#stdno").hide();
 					$("#student_number").hide();
 					$(".collegeDropdown").hide();
 					$(".degreeDropdown").hide();
 					$("#enum").hide();
 					$("#employee_number").hide();
-					
 					$("#employee_number").attr("disabled", "disabled");
 					$("#student_number").attr("disabled", "disabled");
 			}
-			
+
+			/* Parameters: None
+				Description: Checks the password and identify if it is weak, medium or strong
+				Return value: Message - Weak, Medium or Strong
+			*/
 			function validatePassword(){
 				msg = "Invalid input!  ";
 				str = createForm.password.value;
@@ -40,12 +44,16 @@
 				document.getElementsByName("helppass")[0].innerHTML=msg;
 				
 			}
-				
+			
+			/* Parameters: None
+				Description: Checks the retyped password if it matched the first one
+				Return value: Message - Passwords match. or Passwords does not match.
+			*/
 			function validateRePass(){
 				msg = "Invalid input!  ";
 				str = createForm.repass.value;
 				
-				if(str != createForm.password.value) msg+="Password does not match. ";
+				if(str != createForm.password.value) msg+="Passwords does not match. ";
 				else msg="Passwords match.";
 				
 				if(msg == "Invalid input!  ") msg="";
@@ -58,6 +66,7 @@
 
 	<body>
 		<div id="main">
+		<!-- Start of the form -->
 		<form method="post" action="http://localhost/icsls/index.php/create_account/account_created" accept-charset="utf-8" name="createForm">
 
 			First Name: <input type="text" id="first_name" name = "first_name" pattern = "([A-Za-z]{2,32}\s*)+" required/><br/><br/>
@@ -87,28 +96,30 @@
 			</select>
 
 			<script type="text/javascript">
-
+				/*Javascript for the dropdown - Type of User*/
 				$(".typeDropdown").change(function() {
 					var type=$(this).val();
-					if(type == 'S'){
+					if(type == 'S'){			//if the user is a student
+						/*	show: studno(label), student_number(textfield)
+								degreedropdown, collegedropdown
+						 	hide: enum(label), employee number(textfield) */
 						$("#stdno").show();
 						$("#student_number").show();
 						$(".degreeDropdown").show();
 						$(".collegeDropdown").show();
-						
 						$("#enum").hide();
 						$("#employee_number").hide();
-						
 						$("#student_number").removeAttr("disabled");
-					} else if(type == 'F'){
+					} else if(type == 'F'){		//if the user is a faculty
+						/*  show: enum(label), employee number(textfield)
+							hide: studno(label), student_number(textfield)
+								degreedropdown, collegedropdown */
 						$("#stdno").hide();
 						$("#student_number").hide();
 						$(".degreeDropdown").hide();
 						$(".collegeDropdown").hide();
-						
 						$("#enum").show();
 						$("#employee_number").show();
-						
 						$("#employee_number").removeAttr("disabled");
 						$("#student_number").removeAttr("enabled");
 					}
@@ -137,20 +148,27 @@
 			</select>
 
 			<script type="text/javascript">
-			<!--
+				/*Javascript for the dropdown - Select College*/
 				$(".collegeDropdown").change(function() {
 					var col=$(this).val();
-											 
+					
+					/* Parameters: colDegOption - degree option for selected college
+						Description: Appends degree to the 2nd dropdown
+					*/
 					function fillDegreeDropdown(colDegOption) {
 						$.each(colDegOption, function(val, text) {
 							$('.degreeDropdown').append($('<option></option>').val(val).html(text));
 						});
 					}
-														
+					
+					/* Parameters: None
+						Description: Removes all the degrees in the 2nd dropdown
+					*/							
 					function clearDegreeDropdown() {
 						$('.degreeDropdown option:gt(0)').remove();
 					}
 
+					/* if else statements for the different colleges and courses/degrees offered in each */
 					if(col == 'CA') {
 						clearDegreeDropdown();
 															
@@ -317,15 +335,13 @@
 					fillDegreeDropdown(GsOption);
 					}
 				});
-			-->
 			</script>
 
 			<label id = 'enum'> Employee Number: </label>
 				<input type="text" id="employee_number" name = "employee_number" pattern="[0-9]{9}" required/>
 
 			<input type="submit" value="Submit"/>
-		</form>
-
+		</form> 	<!-- End of form -->
 		</div>
 	</body>
 </html>
