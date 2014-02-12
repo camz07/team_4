@@ -1,115 +1,126 @@
 <?php
+	/**
+	* Profile
+	* 
+	* @Package	icsls
+	* @Author	Raquel Abigail Bunag
+	*/
 	class Profile extends CI_Controller{
+		/**
+		* Profile function
+		* 
+		* @access	public
+		* @param	none
+		* @return	none
+		*/
 		public function Profile(){
 			parent::__construct();
+			//load model
 			$this->load->model('user_model');
+			//load library
 			$this->load->library('session');
+			//load helper
 			$this->load->helper('url');
 			$this->load->helper('form');
 		}
-		/* Description: Calls the user_profile to get the User info from the database;
-		   Calls the user_book to get the User's reserved and waitlisted books; All of
-		   the info will be displayed in the User's profile. */
-		public function index(){
+		/**
+		* Index function of Profile
+		* 
+		* @access	public
+		* @param	none
+		* @return	none
+		*/
+		public function index(){ 
+			//title
 			$data["title"] = "Profile - ICS Library System";
-
-			$username = $this->session->userdata('username'); // get username from session
-			$id = $this->session->userdata('id'); //get user id from session
 			
-			$data['query_user'] = $this->user_model->user_profile($username, $id); //query for user table
-			$data['query_book'] = $this->user_model->user_book($id); //query for transactions table
+			// get username from session
+			$username = $this->session->userdata('username'); 
+			//get user id from session
+			$id = $this->session->userdata('id'); 
 			
-			$data['save_message'] = "";
+			//query for user table
+			$data['query_user'] = $this->user_model->user_profile($username, $id); 
+			//query for transactions table
+			$data['query_book'] = $this->user_model->user_book($id); 
+			
+			//save message
+			$data['save_message'] = ""; 
+			//username exist message
 			$data['username_exist'] = "";
-			$this->load->view("profile_view", $data);
+			
+			//load view
+			$this->load->view("profile_view", $data); 
+			
 		}
-
-		/* Description: Updates the User's profile by calling the user_update_profile.
-		   All the updated info will be displayed again in the User's profile. */
-		public function save(){
-			$username = $this->session->userdata('username');
-			$id = $this->session->userdata('id');
-			$user_type = $this->session->userdata('user_type');
-
-			if(isset($_POST['submit'])){ //if submit is clicked 
-				if($_POST["password"]!="") //if password was changed
+		
+		/**
+		* Save Modification to Profile function
+		* 
+		* @access	public
+		* @param	none
+		* @return	none
+		*/
+		public function save(){ 
+			//get username from session
+			$username = $this->session->userdata('username'); 
+			//get user id from session
+			$id = $this->session->userdata('id'); 
+			//get user type from session
+			$user_type = $this->session->userdata('user_type'); 
+			
+			//if submit is clicked 
+			if(isset($_POST['submit'])){ 
+				//if password should change
+				if($_POST["password"]!="") 
 					$password=md5($_POST["password"]);
-				else { //if password is the same as before
+				//if password is the same as before
+				else { 
+					//get password from database
 					$query = $this->user_model->user_profile($username, $id);
-					//foreach($query as $row){
-						$password = $query->password;
-					//}
+					foreach($query as $row){
+						$password = $row->password;
+					}
 				}
-
+				
+				//if inputed username exist
 				if($this->user_model->username_exists($_POST["username"])){
-					$username = $this->session->userdata('username'); //get username from session
+					//get username from session
+					$username = $this->session->userdata('username'); 
+					//set message
 					$data['username_exist'] = "Username already exist!";
 				}else{
+					//entered username is unique
 					$username =$_POST["username"];
 					$data['username_exist'] = "";
-				}	
-
+				}
+				
+				//get values from form
 				$college_address=$_POST["college_address"];
 				$email_address=$_POST["email_address"];
 				$contact_number=$_POST["contact_number"];
+				
 			}
 			
 			//update user profile
 			$this->user_model->user_update_profile($id, $username, $password, $college_address, $email_address, $contact_number);
-			$data["title"] = "Profile - ICS Library System";
+			//save message
+			$data['save_message'] = "Update Saved!";
+			
+			//title of page
+			$data["title"] = "Profile - ICS Library System"; 
 			
 			//reset user data on session
-			$sessionData = array('loggedIn' => TRUE, 'id' => $id, 'user_type' => $user_type, 'username' => $username); 
+			$sessionData = array('loggedIn' => true, 'id' => $id, 'user_type' => $user_type, 'username' => $username); 
 			$this->session->set_userdata($sessionData);
 			
 			//user query read from database again
 			$data['query_user'] = $this->user_model->user_profile($username, $id); 
-			$data['query_book'] = $this->user_model->user_book($id);
+			//query for transactions table
+			$data['query_book'] = $this->user_model->user_book($id); 
 			
-			$data['save_message'] = "Update Saved!";//save message
+			//load view
 			$this->load->view("profile_view", $data);
-		}
-
-		public function change_profile_picture(){
-			$this->load->library('upload');
-			$username = $this->session->userdata('username');
-			$this->user_model->upload_picture($username);
-
-			redirect('profile');
-		}
-
-		/* Description: function for cancelling reserved/waitlisted books*/
-		public function cancel_transaction(){
-			$referenceId = $this->input->post('ref_id');
-			$id = $this->session->userdata('id');
-			// if "Cancel Reservation" was clicked
-			if(isset($_POST['cancel_reserve'])){
-				$cancelStatus = $this->user_model->cancel_reserve_reference_material($referenceId, $id);
-				$data["title"] = "Profile - ICS Library System";
-
-				$username = $this->session->userdata('username'); // get username from session
-				$id = $this->session->userdata('id'); //get user id from session
-				
-				$data['query_user'] = $this->user_model->user_profile($username, $id); //query for user table
-				$data['query_book'] = $this->user_model->user_book($id); //query for transactions table
-				
-				$data['save_message'] = "";
-				redirect(base_url()."index.php/profile");
-			}
-			// if "Cancel Waitlist" was clicked
-			if(isset($_POST['cancel_waitlist'])){
-				$cancelStatus = $this->user_model->cancel_waitlist_reference_material($referenceId, $id);
-				$data["title"] = "Profile - ICS Library System";
-
-				$username = $this->session->userdata('username'); // get username from session
-				$id = $this->session->userdata('id'); //get user id from session
-				
-				$data['query_user'] = $this->user_model->user_profile($username, $id); //query for user table
-				$data['query_book'] = $this->user_model->user_book($id); //query for transactions table
-				
-				$data['save_message'] = "";
-				redirect(base_url()."index.php/profile");
-			}
 		}
 		
 	}

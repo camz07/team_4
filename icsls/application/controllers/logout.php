@@ -1,15 +1,37 @@
 <?php
-
+/**
+ * Logout Class
+ *
+ * @Package	icsls
+ * @Author	Raquel Abigail Bunag
+ */
 class Logout extends CI_Controller{
+	/**
+	* Logout function
+	* 
+	* @access	public
+	* @param	none
+	* @return	none
+	*/
 	public function Logout(){
 		parent::__construct();
 	}
-
-	public function index(){
-		$this->session->sess_destroy();	//destroys all session variables
-
-		$data["title"] = "Home - ICS Library System";
-		redirect(base_url()."index.php/login"); //redirects to login page 
+	
+	/**
+	* Index function of Logout
+	* 
+	* @access	public
+	* @param	none
+	* @return	none
+	*/
+	public function index(){ 
+		//destroy session
+		$this->session->sess_destroy(); 
+		
+		//title
+		$data["title"] = "Home - ICS Library System"; 
+		// load login page
+		redirect(base_url()."index.php/login"); 
 	}
 }
 
